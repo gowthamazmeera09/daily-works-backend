@@ -8,7 +8,7 @@ const addworkRouter = require ('./router/addworkRouter');
 
 const app = express();
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 app.use(cors());
 dotEnv.config();
 mongoose.connect(process.env.MONGO_URL)
@@ -25,4 +25,8 @@ app.use('/work',addworkRouter);
 
 app.listen(PORT,()=>{
     console.log(`server started and running at ${PORT}`)
+})
+
+app.use('/',(req, res)=>{
+    res.send("<h1> hello gowtham how are you </h1>")
 })
