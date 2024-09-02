@@ -4,7 +4,7 @@ const verifyToken = require ('../middleware/VerifyToken');
 
 const router = express.Router();
 
-router.post('/addwork',verifyToken,addworkController.workadding)
+router.post('/addwork/:userId',verifyToken,addworkController.workadding)
 
 
 module.exports = router;

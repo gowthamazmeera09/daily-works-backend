@@ -1,25 +1,25 @@
-const mongoose = require ('mongoose');
+const mongoose = require('mongoose');
 
-const addworkSchema = new mongoose.Schema({
-    workname:{
-        type:String,
-        required:true
+const addWorkSchema = new mongoose.Schema({
+    workname: {
+        type: String,
+        required: true,
+        // Ensure this is not unique
+        unique: false
     },
-    experiance:{
-        type:String,
-        required:true
+    experience: {
+        type: String,
+        required: true
     },
-    location:{
-        type:String,
-        required:true
+    location: {
+        type: String,
+        required: true
     },
-    user:[
-        {
-            type:mongoose.Schema.Types.ObjectId,
+    user:[{
+         type:mongoose.Schema.Types.ObjectId,
             ref:'User'
-        }
-    ]
-})
-const ADDWORK = mongoose.model('Addwork',addworkSchema);
+    }]
+});
 
+const ADDWORK = mongoose.model('ADDWORK', addWorkSchema);
 module.exports = ADDWORK;
