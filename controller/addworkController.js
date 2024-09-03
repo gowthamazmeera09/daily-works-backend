@@ -2,7 +2,7 @@ const ADDWORK = require('../model/Addwork');
 const User = require('../model/User');
 
 const workadding = async (req, res) => {
-    const { workname, experience, location } = req.body;
+    const { workname, experience, location, images } = req.body;
     const userId = req.params.userId;
 
     try {
@@ -20,7 +20,6 @@ const workadding = async (req, res) => {
             if (user.addwork.includes(work._id)) {
                 return res.status(400).json({ message: "This work is already added by the user" });
             }
-            // If the work exists but is not added by the user, still return a message indicating existing work
             return res.status(400).json({ message: "This work already exists with the same details" });
         } else {
             // If the work does not exist, create a new entry
@@ -28,7 +27,8 @@ const workadding = async (req, res) => {
                 workname,
                 experience,
                 location,
-                user:user._id
+                images, // Store the array of images
+                user: user._id
             });
             const savedWork = await work.save();
             work = savedWork; // Use the newly created work

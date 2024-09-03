@@ -15,6 +15,7 @@ const addWorkSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    images: [{ type: String }],
     user:[{
          type:mongoose.Schema.Types.ObjectId,
             ref:'User'
