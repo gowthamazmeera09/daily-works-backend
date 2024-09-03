@@ -43,9 +43,10 @@ const userLogin = async(req, res)=>{
             return res.status(401).json({error:"invalid username or password"})
         }
         const token = jwt.sign({userId:user._id},secretKey,{expiresIn:"1h"})
+        const profilepicture = user.profilepicture
 
 
-        res.status(200).json({success:"Login successful",token,userId:user._id})
+        res.status(200).json({success:"Login successful",token,userId:user._id,profilepicture: user.profilepicture})
         console.log(email,token,user._id);
     }catch(error){
         console.log(error);
