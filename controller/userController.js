@@ -10,9 +10,13 @@ const secretKey = process.env.MyNameIsMySecretKey
 const userRegister = async(req, res)=>{
     const {username,email,password,phonenumber,profilepicture} = req.body
     try {
-        const userEmail = await User.findOne({email});
+        const userEmail = await User.findOne({email})
         if(userEmail){
-            return res.status({message:"email already taken"})
+            return res.status(400).json({taken:"email already taken"})
+        }
+        const userPhoneNumber = await User.findOne({phonenumber})
+        if(userPhoneNumber){
+            return res.status(400).json({taken:"this phonenumber is already used"})
         }
         const hashedpassword = await bcrypt.hash(password, 10)
 
