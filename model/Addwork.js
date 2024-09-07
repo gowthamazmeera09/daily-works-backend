@@ -4,8 +4,6 @@ const addWorkSchema = new mongoose.Schema({
     workname: {
         type: String,
         required: true,
-        // Ensure this is not unique
-        unique: false
     },
     experience: {
         type: String,
@@ -22,5 +20,5 @@ const addWorkSchema = new mongoose.Schema({
     }]
 });
 
-const ADDWORK = mongoose.model('ADDWORK', addWorkSchema);
+const ADDWORK = mongoose.model('Addwork', addWorkSchema);
 module.exports = ADDWORK;
