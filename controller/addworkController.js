@@ -2,7 +2,7 @@ const ADDWORK = require('../model/Addwork');
 const User = require('../model/User');
 
 const workadding = async (req, res) => {
-    const { workname, experience, location } = req.body;
+    const { workname, experience, location, images } = req.body;
     const userId = req.params.userId;
 
     try {
@@ -27,6 +27,7 @@ const workadding = async (req, res) => {
                 workname,
                 experience,
                 location,
+                images,
                 user: user._id
             });
             const savedWork = await work.save();
