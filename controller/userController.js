@@ -3,59 +3,27 @@ const jwt = require ('jsonwebtoken');
 const bcrypt = require ('bcryptjs');
 const dotEnv = require ('dotenv');
 const multer = require('multer');
-const path = require('path');
+const path = require ('path');
 
 dotEnv.config();
 
 const secretKey = process.env.MyNameIsMySecretKey 
 
-// // Multer storage configuration
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//         cb(null, 'uploads/'); // Folder where the images will be stored
-//     },
-//     filename: function (req, file, cb) {
-//         cb(null, Date.now() + path.extname(file.originalname)); // Appending the original file extension
-//     }
-// });
-
-// // Multer filter to accept only image files
-// const fileFilter = (req, file, cb) => {
-//     const fileTypes = /jpeg|jpg|png|gif/;
-//     const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
-//     const mimeType = fileTypes.test(file.mimetype);
-
-//     if (extname && mimeType) {
-//         return cb(null, true);
-//     } else {
-//         cb(new Error('Only image files are allowed!'));
-//     }
-// };
-
-// // Initialize multer
-// const upload = multer({
-//     storage: storage,
-//     limits: { fileSize: 1024 * 1024 * 5 }, // 5MB file size limit
-//     fileFilter: fileFilter
-// });
-
-
-
 const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, 'uploads/'); // Destination folder where the uploaded images will be stored
+    destination:(req, file, cb)=>{
+        cb(null,('img/images'))
     },
-    filename: function(req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname)); // Generating a unique filename
+    filename:(req, file, cb)=>{
+        cb(null, file.fieldname + "_"+ Date.now() + path.extname(file.originalname))
     }
-});
-
-const upload = multer({ storage: storage });
-
+})
+const upload = multer({
+    storage:storage
+})
 
 const userRegister = async(req, res)=>{
     const {username,email,password,phonenumber} = req.body;
-    let profilepicture = req.file ? req.file.filename : null;
+        
     try {
         const userEmail = await User.findOne({email})
         if(userEmail){
@@ -73,7 +41,7 @@ const userRegister = async(req, res)=>{
             email,
             password:hashedpassword,
             phonenumber,
-            profilepicture
+            profilepicture: req.file ? req.file.filename : null
 
         });
         await newuser.save();
