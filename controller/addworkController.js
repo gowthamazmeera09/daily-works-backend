@@ -46,5 +46,23 @@ const workadding = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+const deletework = async(req, res) => {
+    
+    const workId = req.params.workId; 
+    try {
+        const deletedWork = await ADDWORK.findByIdAndDelete(workId);
+        if (!deletedWork) {
+            return res.status(400).json({ message: "No work found" });
+        }
+        
+        
+        res.status(200).json({ message: "Deleted successfully" });
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" }); 
+    }
+};
 
-module.exports = { workadding };
+
+module.exports = { workadding, deletework };
