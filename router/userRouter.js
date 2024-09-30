@@ -1,4 +1,4 @@
-const { userRegister,userLogin, getAllUsers, getUserById} = require('../controller/userController')
+const userController = require ('../controller/userController')
 const express = require ('express');
 const multer = require ('multer');
 const path = require ('path');
@@ -17,10 +17,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
-router.post('/register', upload.single('image'),userRegister);
-router.post('/Login',userLogin);
+router.post('/register', upload.single('image'),userController.userRegister);
+router.post('/Login',userController.userLogin);
 
-router.get('/all-users',getAllUsers);
-router.get('/single-user/:id',getUserById);
+router.get('/all-users',userController.getAllUsers);
+router.get('/single-user/:id',userController.getUserById);
 
 module.exports = router;

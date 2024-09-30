@@ -24,7 +24,7 @@ const userRegister = async(req, res)=>{
         if(userPhoneNumber){
             return res.status(400).json({taken:"this phonenumber is already used"})
         }
-        const imageUrl = `/uploads/${req.file}`;
+        // const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
 
         const hashedpassword = await bcrypt.hash(password, 10)
 
@@ -34,7 +34,7 @@ const userRegister = async(req, res)=>{
             email,
             password:hashedpassword,
             phonenumber,
-            imageUrl
+            // imageUrl
 
         });
         await newuser.save();
