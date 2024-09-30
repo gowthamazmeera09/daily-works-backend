@@ -2,29 +2,20 @@ const User = require ('../model/User');
 const jwt = require ('jsonwebtoken');
 const bcrypt = require ('bcryptjs');
 const dotEnv = require ('dotenv');
-const multer = require('multer');
 const path = require ('path');
 
 dotEnv.config();
 
 const secretKey = process.env.MyNameIsMySecretKey 
 
-const storage = multer.diskStorage({
-    destination:(req, file, cb)=>{
-        cb(null,('img/images'))
-    },
-    filename:(req, file, cb)=>{
-        cb(null, file.fieldname + "_"+ Date.now() + path.extname(file.originalname))
-    }
-})
-const upload = multer({
-    storage:storage
-})
+
 
 const userRegister = async(req, res)=>{
     const {username,email,password,phonenumber} = req.body;
         
     try {
+        
+    
         const userEmail = await User.findOne({email})
         if(userEmail){
             return res.status(400).json({taken:"email already taken"})
@@ -33,6 +24,8 @@ const userRegister = async(req, res)=>{
         if(userPhoneNumber){
             return res.status(400).json({taken:"this phonenumber is already used"})
         }
+        const imageUrl = `/uploads/${req.file}`;
+
         const hashedpassword = await bcrypt.hash(password, 10)
 
 
@@ -41,11 +34,11 @@ const userRegister = async(req, res)=>{
             email,
             password:hashedpassword,
             phonenumber,
-            profilepicture: req.file ? req.file.filename : null
+            imageUrl
 
         });
         await newuser.save();
-        res.status(201).json({message:"user registered successfully"});
+        res.status(201).json({message:"user registered successfully",user: newuser});
         console.log('registered')
         
     } catch (error) {
@@ -62,10 +55,10 @@ const userLogin = async(req, res)=>{
             return res.status(401).json({error:"invalid username or password"})
         }
         const token = jwt.sign({userId:user._id},secretKey,{expiresIn:"1h"})
-        const profilepicture = user.profilepicture
+        const avatar = user.avatar
 
 
-        res.status(200).json({success:"Login successful",token,userId:user._id,profilepicture: user.profilepicture})
+        res.status(200).json({success:"Login successful",token,userId:user._id,avatar: user.avatar})
         console.log(email,token,user._id);
     }catch(error){
         console.log(error);
@@ -99,4 +92,4 @@ const getUserById = async(req, res)=>{
 
 
 
-module.exports = {userRegister: [upload.single('profilepicture'), userRegister],userLogin, getAllUsers, getUserById }
+module.exports = {userRegister,userLogin, getAllUsers, getUserById }

@@ -19,10 +19,10 @@ const userschema = new mongoose.Schema({
         required:true,
         unique:true
     },
-    profilepicture:{
-        type:String,
-        default:"https://www.pngitem.com/pimgs/m/504-5040528_empty-profile-picture-png-transparent-png.png"
-    },
+    imageUrl: {
+         type: String, 
+         default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAd5avdba8EiOZH8lmV3XshrXx7dKRZvhx-A&s"
+     },
     addwork:[
         {
             type:mongoose.Schema.Types.ObjectId,

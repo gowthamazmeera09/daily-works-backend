@@ -2,7 +2,7 @@ const ADDWORK = require('../model/Addwork');
 const User = require('../model/User');
 
 const workadding = async (req, res) => {
-    const { workname, experience, location, images } = req.body;
+    const { workname, experience, location } = req.body;
     const userId = req.params.userId;
 
     try {
@@ -11,6 +11,7 @@ const workadding = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
+        const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
 
         // Check if the work with the given name, experience, and location exists
         let work = await ADDWORK.findOne({ workname, experience, location });
@@ -21,13 +22,14 @@ const workadding = async (req, res) => {
                 return res.status(400).json({ message: "This work is already added by the user" });
             }
             return res.status(400).json({ message: "This work already exists with the same details" });
-        } else {
+        }
+         else {
             // If the work does not exist, create a new entry
             work = new ADDWORK({
                 workname,
                 experience,
                 location,
-                images,
+                imageUrl,
                 user: user._id
             });
             const savedWork = await work.save();
