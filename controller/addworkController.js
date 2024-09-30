@@ -21,7 +21,7 @@ const workadding = async (req, res) => {
         }
 
         // Construct absolute URLs for the images
-        const imageUrls = req.files.map(file => `${req.protocol}://${req.get('host')}/uploads/${file.filename}`);
+        const imageUrl = req.files.map(file => `${req.protocol}://${req.get('host')}/uploads/${file.filename}`);
 
         // Check if the work with the given name, experience, and location exists
         let work = await ADDWORK.findOne({ workname, experience, location });
@@ -38,7 +38,7 @@ const workadding = async (req, res) => {
                 workname,
                 experience,
                 location,
-                imageUrls, // Store array of image URLs
+                imageUrl, // Store array of image URLs
                 user: user._id
             });
             const savedWork = await work.save();
@@ -75,13 +75,13 @@ const addImageToWork = async (req, res) => {
         }
 
         // Construct absolute URLs for the new images
-        const newImageUrls = req.files.map(file => `${req.protocol}://${req.get('host')}/uploads/${file.filename}`);
+        const newImageUrl = req.files.map(file => `${req.protocol}://${req.get('host')}/uploads/${file.filename}`);
 
-        // Add new images to the imageUrls array
-        work.imageUrls.push(...newImageUrls);
+        // Add new images to the imageUrl array
+        work.imageUrl.push(...newImageUrl);
         await work.save();
 
-        res.status(200).json({ success: "Images added successfully", imageUrls: newImageUrls });
+        res.status(200).json({ success: "Images added successfully", imageUrl: newImageUrl });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
@@ -104,13 +104,13 @@ const deleteImageFromWork = async (req, res) => {
         const imageUrlToDelete = `${req.protocol}://${req.get('host')}/uploads/${imageName}`;
 
         // Find the index of the imageUrl
-        const imageIndex = work.imageUrls.indexOf(imageUrlToDelete);
+        const imageIndex = work.imageUrl.indexOf(imageUrlToDelete);
         if (imageIndex === -1) {
             return res.status(404).json({ error: "Image not found in this work" });
         }
 
         // Remove the imageUrl from the array
-        work.imageUrls.splice(imageIndex, 1);
+        work.imageUrl.splice(imageIndex, 1);
 
         // Delete the image file from the filesystem
         const filePath = path.join(__dirname, '..', 'uploads', imageName);
@@ -140,8 +140,8 @@ const deletework = async(req, res) => {
         }
 
         // Optionally, delete associated images from the filesystem
-        if (deletedWork.imageUrls && deletedWork.imageUrls.length > 0) {
-            deletedWork.imageUrls.forEach(imageUrl => {
+        if (deletedWork.imageUrl && deletedWork.imageUrl.length > 0) {
+            deletedWork.imageUrl.forEach(imageUrl => {
                 const imageName = imageUrl.split('/').pop();
                 const filePath = path.join(__dirname, '..', 'uploads', imageName);
                 fs.unlink(filePath, (err) => {
