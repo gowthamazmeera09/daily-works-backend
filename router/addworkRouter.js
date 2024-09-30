@@ -1,6 +1,6 @@
-const express = require('express');
-const addworkController = require('../controller/addworkController');
-const verifyToken = require('../middleware/VerifyToken');
+const express = require ('express');
+const addworkController = require('../controller/addworkController')
+const verifyToken = require ('../middleware/VerifyToken');
 const multer = require('multer');
 const path = require('path');
 
@@ -16,19 +16,10 @@ const storage = multer.diskStorage({
     }
 });
 
-// Initialize multer with storage settings
 const upload = multer({ storage });
 
-// Route to add a new work with multiple images
-router.post('/addwork/:userId', verifyToken, upload.array('work', 5), addworkController.workadding);
+router.post('/addwork/:userId',verifyToken,upload.single('work'),addworkController.workadding);
+router.delete('/deletework/:workId',addworkController.deletework);
 
-// Route to delete an entire work
-router.delete('/deletework/:workId', verifyToken, addworkController.deletework);
-
-// New route to add images to an existing work
-router.post('/addimage/:workId', verifyToken, upload.array('images', 5), addworkController.addImageToWork);
-
-// New route to delete a specific image from a work
-router.delete('/deleteimage/:workId/:imageName', verifyToken, addworkController.deleteImageFromWork);
 
 module.exports = router;
