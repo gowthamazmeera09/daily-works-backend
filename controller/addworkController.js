@@ -1,6 +1,9 @@
 const ADDWORK = require('../model/Addwork');
 const User = require('../model/User');
+const path = require('path');
+const fs = require('fs');
 
+// Existing workadding function updated to handle multiple images
 const workadding = async (req, res) => {
     const { workname, experience, location } = req.body;
     const userId = req.params.userId;
@@ -12,8 +15,13 @@ const workadding = async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        // Construct the absolute URL for the image
-        const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+        // Process uploaded files
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: "At least one image is required" });
+        }
+
+        // Construct absolute URLs for the images
+        const imageUrls = req.files.map(file => `${req.protocol}://${req.get('host')}/uploads/${file.filename}`);
 
         // Check if the work with the given name, experience, and location exists
         let work = await ADDWORK.findOne({ workname, experience, location });
@@ -30,7 +38,7 @@ const workadding = async (req, res) => {
                 workname,
                 experience,
                 location,
-                imageUrl,
+                imageUrls, // Store array of image URLs
                 user: user._id
             });
             const savedWork = await work.save();
@@ -50,16 +58,101 @@ const workadding = async (req, res) => {
     }
 };
 
+// New function to add images to an existing work
+const addImageToWork = async (req, res) => {
+    const workId = req.params.workId;
+
+    try {
+        // Find the work by ID
+        const work = await ADDWORK.findById(workId);
+        if (!work) {
+            return res.status(404).json({ error: "Work not found" });
+        }
+
+        // Check if files are uploaded
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: "No images uploaded" });
+        }
+
+        // Construct absolute URLs for the new images
+        const newImageUrls = req.files.map(file => `${req.protocol}://${req.get('host')}/uploads/${file.filename}`);
+
+        // Add new images to the imageUrls array
+        work.imageUrls.push(...newImageUrls);
+        await work.save();
+
+        res.status(200).json({ success: "Images added successfully", imageUrls: newImageUrls });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+// New function to delete an individual image from a work
+const deleteImageFromWork = async (req, res) => {
+    const workId = req.params.workId;
+    const imageName = req.params.imageName;
+
+    try {
+        // Find the work by ID
+        const work = await ADDWORK.findById(workId);
+        if (!work) {
+            return res.status(404).json({ error: "Work not found" });
+        }
+
+        // Construct the imageUrl based on imageName
+        const imageUrlToDelete = `${req.protocol}://${req.get('host')}/uploads/${imageName}`;
+
+        // Find the index of the imageUrl
+        const imageIndex = work.imageUrls.indexOf(imageUrlToDelete);
+        if (imageIndex === -1) {
+            return res.status(404).json({ error: "Image not found in this work" });
+        }
+
+        // Remove the imageUrl from the array
+        work.imageUrls.splice(imageIndex, 1);
+
+        // Delete the image file from the filesystem
+        const filePath = path.join(__dirname, '..', 'uploads', imageName);
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                console.error(`Failed to delete image file: ${filePath}`, err);
+                // Proceed without stopping
+            }
+        });
+
+        await work.save();
+
+        res.status(200).json({ success: "Image deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+// Existing deletework function remains unchanged
 const deletework = async(req, res) => {
-    
     const workId = req.params.workId; 
     try {
         const deletedWork = await ADDWORK.findByIdAndDelete(workId);
         if (!deletedWork) {
             return res.status(400).json({ message: "No work found" });
         }
-        
-        
+
+        // Optionally, delete associated images from the filesystem
+        if (deletedWork.imageUrls && deletedWork.imageUrls.length > 0) {
+            deletedWork.imageUrls.forEach(imageUrl => {
+                const imageName = imageUrl.split('/').pop();
+                const filePath = path.join(__dirname, '..', 'uploads', imageName);
+                fs.unlink(filePath, (err) => {
+                    if (err) {
+                        console.error(`Failed to delete image file: ${filePath}`, err);
+                        // Proceed without stopping
+                    }
+                });
+            });
+        }
+
         res.status(200).json({ message: "Deleted successfully" });
         
     } catch (error) {
@@ -68,5 +161,4 @@ const deletework = async(req, res) => {
     }
 };
 
-
-module.exports = { workadding, deletework };
+module.exports = { workadding, deletework, addImageToWork, deleteImageFromWork };
