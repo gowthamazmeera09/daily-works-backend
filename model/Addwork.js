@@ -13,7 +13,7 @@ const addWorkSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    imageUrl: { // Changed from imageUrl to imageUrls
+    imageUrls: { // Changed from imageUrl to imageUrls
         type: [String], // Array of strings
         required: true
     },
