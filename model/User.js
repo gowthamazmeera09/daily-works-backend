@@ -19,16 +19,10 @@ const userschema = new mongoose.Schema({
         required:true,
         unique:true
     },
-    imageUrl: { 
+    profilePicture: { // New field added
         type: String,
-        default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAd5avdba8EiOZH8lmV3XshrXx7dKRZvhx-A&s",
-        required:true
-
+        default: '' // Optional: default to empty string if not provided
     },
-    // imageUrl: {
-    //      type: String, 
-    //      default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAd5avdba8EiOZH8lmV3XshrXx7dKRZvhx-A&s"
-    //  },
     addwork:[
         {
             type:mongoose.Schema.Types.ObjectId,

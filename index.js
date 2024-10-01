@@ -5,7 +5,6 @@ const userRouter = require ('./router/userRouter');
 const bodyparser = require ('body-parser');
 const cors = require ('cors');
 const addworkRouter = require ('./router/addworkRouter');
-const multer = require('multer');
 const path = require('path')
 
 const app = express();

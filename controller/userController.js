@@ -8,10 +8,25 @@ dotEnv.config();
 
 const secretKey = process.env.MyNameIsMySecretKey 
 
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+
+const upload = multer({ storage });
+
+
 
 
 const userRegister = async(req, res)=>{
     const {username,email,password,phonenumber} = req.body;
+    const profilePicture = req.file ? req.file.path : ''; 
         
     try {
         
@@ -24,7 +39,6 @@ const userRegister = async(req, res)=>{
         if(userPhoneNumber){
             return res.status(400).json({taken:"this phonenumber is already used"})
         }
-        // const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
 
         const hashedpassword = await bcrypt.hash(password, 10)
 
@@ -34,7 +48,9 @@ const userRegister = async(req, res)=>{
             email,
             password:hashedpassword,
             phonenumber,
-            // imageUrl
+            profilePicture 
+            
+            
 
         });
         await newuser.save();
@@ -55,10 +71,10 @@ const userLogin = async(req, res)=>{
             return res.status(401).json({error:"invalid username or password"})
         }
         const token = jwt.sign({userId:user._id},secretKey,{expiresIn:"1h"})
-        const avatar = user.avatar
+        
 
 
-        res.status(200).json({success:"Login successful",token,userId:user._id,avatar: user.avatar})
+        res.status(200).json({success:"Login successful",token,userId:user._id,profilePicture: user.profilePicture ? `${"https://daily-work-backend.onrender.com/"}${user.profilePicture}` : ''})
         console.log(email,token,user._id);
     }catch(error){
         console.log(error);
@@ -92,4 +108,4 @@ const getUserById = async(req, res)=>{
 
 
 
-module.exports = {userRegister,userLogin, getAllUsers, getUserById }
+module.exports = {userRegister:[upload.single('profilePicture'),userRegister],userLogin, getAllUsers, getUserById }
