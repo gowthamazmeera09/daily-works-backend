@@ -74,7 +74,7 @@ const userLogin = async(req, res)=>{
         
 
 
-        res.status(200).json({success:"Login successful",token,userId:user._id,profilePicture: user.profilePicture ? `${"http://localhost:4000/"}${user.profilePicture}` : ''})
+        res.status(200).json({success:"Login successful",token,userId:user._id,profilePicture: user.profilePicture ? `${"https://daily-work-backend.onrender.com/"}${user.profilePicture}` : ''})
         console.log(email,token,user._id);
     }catch(error){
         console.log(error);
