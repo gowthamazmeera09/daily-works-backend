@@ -70,7 +70,7 @@ const userLogin = async(req, res)=>{
         if(!user || !(await bcrypt.compare(password, user.password))){
             return res.status(401).json({error:"invalid username or password"})
         }
-        const token = jwt.sign({userId:user._id},secretKey,{expiresIn:"1h"})
+        const token = jwt.sign({userId:user._id},secretKey,{expiresIn:"1m"})
         
 
 
