@@ -55,7 +55,7 @@ const userRegister = async(req, res)=>{
         console.log('registered')
 
     } catch (error) {
-        console.error(error);
+        console.error(error.message);
         res.status(400).json({error:"internal server error"})
     }
 }
@@ -107,6 +107,7 @@ const getUserById = async(req, res)=>{
 
 module.exports = {
     userRegister: [upload.single('profilePicture'), userRegister],
+   
     userLogin,
     getAllUsers,
     getUserById
