@@ -30,7 +30,6 @@ const userRegister = async(req, res)=>{
 
     try {
 
-
         const userEmail = await User.findOne({email})
         if(userEmail){
             return res.status(400).json({taken:"email already taken"})
@@ -49,8 +48,6 @@ const userRegister = async(req, res)=>{
             password:hashedpassword,
             phonenumber,
             profilePicture 
-
-
 
         });
         await newuser.save();
@@ -78,7 +75,7 @@ const userLogin = async(req, res)=>{
         console.log(email,token,user._id);
     }catch(error){
         console.log(error);
-        res.status(500).json({error:"internal server error"})
+        res.status(405).json({error:"internal server error"})
     }
 }
 
