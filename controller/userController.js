@@ -27,10 +27,10 @@ const upload = multer({ storage });
 const userRegister = async(req, res)=>{
     const {username,email,password,phonenumber} = req.body;
     const profilePicture = req.file ? req.file.path : ''; 
-        
+
     try {
-        
-    
+
+
         const userEmail = await User.findOne({email})
         if(userEmail){
             return res.status(400).json({taken:"email already taken"})
@@ -49,14 +49,14 @@ const userRegister = async(req, res)=>{
             password:hashedpassword,
             phonenumber,
             profilePicture 
-            
-            
+
+
 
         });
         await newuser.save();
         res.status(201).json({message:"user registered successfully",user: newuser});
         console.log('registered')
-        
+
     } catch (error) {
         console.error(error);
         res.status(400).json({error:"internal server error"})
@@ -108,4 +108,9 @@ const getUserById = async(req, res)=>{
 
 
 
-module.exports = {userRegister:[upload.single('profilePicture'),userRegister],userLogin, getAllUsers, getUserById }
+module.exports = {
+    userRegister: [upload.single('profilePicture'), userRegister],
+    userLogin,
+    getAllUsers,
+    getUserById
+};
